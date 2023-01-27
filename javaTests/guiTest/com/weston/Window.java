@@ -1,8 +1,13 @@
 package com.weston;
 
+import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import java.awt.GridLayout;
 public class Window extends JFrame {
 
     private int resolution;
@@ -14,7 +19,16 @@ public class Window extends JFrame {
 
     private void buildWindow() {
         Screen screen = new Screen(this, resolution);
-        add(screen);
+
+        GridLayout gLayout = new GridLayout(2,2);
+        this.setLayout(gLayout);
+        this.add(screen);
+
+        
+        CPUView cpuView = new CPUView(this);
+        this.add(cpuView);  
+        this.add(new JButton("hello"));
+        this.add(new JButton("hello"));
 
 
 
