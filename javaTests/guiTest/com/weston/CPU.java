@@ -69,12 +69,49 @@ class CPU {
 
 
 
+
+
+    public String formatStateSingle(String name, short value) {
+        String ret = name + ":  ";
+        ret += padHex(Integer.toHexString(value));
+        ret += "  " + value + "\n";
+
+        return ret;
+    }
+
+    public String padHex(String hex) {
+        String ret = "0x";
+        ret += String.format("%4s", hex).toUpperCase();
+        ret = ret.replace(" ", "0");
+
+        return ret;
+    }
+
     public String getState() {
         String data = "";
 
-        data += "PC: 0x" + Integer.toHexString(PC) + "\n";
-        data += "I:  0x" + Integer.toHexString(I) + "\n";
+        data += formatStateSingle("PC", PC);
+        data += formatStateSingle(" I", I) + "\n";
         
+        for (int a = 0; a < 16; a++) {
+            data += "V" + Integer.toHexString(a).toUpperCase() + "      ";
+        }
+        data += "\n";
+        for (int a = 0; a < 16; a++) {
+            String hex = padHex(Integer.toHexString(V[a]));
+            data += hex + "  ";
+        }
+        data += "\n\n";
+
+        for (int a = 0; a < 16; a++) {
+            data += "S" + Integer.toHexString(a).toUpperCase() + "      ";
+        }
+        data += "\n";
+        for (int a = 0; a < 16; a++) {
+            String hex = padHex(Integer.toHexString(S[a]));
+            data += hex + "  ";
+        }
+        data += "\n";
 
         return data;
     }
