@@ -22,8 +22,7 @@ import java.awt.Color;
 import java.util.Random;
 
 
-public class Screen extends JPanel
-    implements ActionListener {
+public class Screen extends JPanel {
 
     private int resolution;
     private int screenWidth;
@@ -50,6 +49,11 @@ public class Screen extends JPanel
         buildScreen(parent);
     }
 
+    public void refresh() {
+        this.populateScreenMEM();
+        this.repaint();
+    }
+
     private void populateScreenMEM() {
         Random rd = new Random();
         for (int x = 0; x < 64; x++) {
@@ -62,14 +66,14 @@ public class Screen extends JPanel
     private void buildScreen(Window parent) {
         setFocusable(true);
         setSize(64*resolution, 32*resolution);
-        timer = new Timer(100, this);
-        timer.start();
 
         addKeyListener(new TAdapter());
 
               
 
     }
+
+    
 
     private void doDrawing(Graphics g) {
 
@@ -88,26 +92,6 @@ public class Screen extends JPanel
         
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // System.out.println("tick");
-        
-
-        String s = e.getActionCommand();
-
-        if (s == null) {
-            populateScreenMEM();
-            repaint();
-        } else {
-            switch (s) {
-                case "submit":
-                    System.out.println("But");
-                    break;
-            }
-        }
-        
-
-    }
 
     @Override
     public void paintComponent(Graphics g) {
