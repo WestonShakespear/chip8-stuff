@@ -6,9 +6,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import java.awt.GridLayout;
@@ -22,10 +19,11 @@ public class Window extends JFrame
     private CPU chip8;
     private Screen screen;
     private CPUView cpuView;
+    private Control control;
 
     public Window(String[] args) {
 
-        chip8 = new CPU();
+        chip8 = new CPU(args[1]);
 
         resolution = Integer.parseInt(args[0]);
         buildWindow();
@@ -41,7 +39,9 @@ public class Window extends JFrame
         
         cpuView = new CPUView(this);
         this.add(cpuView);  
-        this.add(new JButton("click"));
+        
+        control = new Control(this, chip8);
+        this.add(control);
         this.add(new JButton("me"));
 
         setSize(128*resolution, 64*resolution);
@@ -62,12 +62,13 @@ public class Window extends JFrame
 
         if (s == null) {
             chip8.clockPulse();
-            String[] state = chip8.getState();
+            String[] stateCPU = chip8.getStateCPUView();
+            boolean[][] stateScreen = chip8.getStateScreen();
             
-            screen.refresh();
-            cpuView.refresh(state);
+            screen.refresh(stateScreen);
+            cpuView.refresh(stateCPU);
 
-            System.out.println(chip8.getStateString());
+            // System.out.println(chip8.getStateString());
         } else {
             
         }

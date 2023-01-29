@@ -1,0 +1,10 @@
+https://tobiasvl.github.io/blog/write-a-chip-8-emulator/
+https://github.com/corax89/chip8-test-rom
+http://www.cs.columbia.edu/~sedwards/classes/2016/4840-spring/designs/Chip8.pdf
+https://www.pong-story.com/chip8/
+https://austinmorlan.com/posts/chip8_emulator/#chip-8-description
+http://www.emulator101.com/introduction-to-chip-8.html
+https://en.wikipedia.org/wiki/CHIP-8
+https://github.com/mwales/chip8
+http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
+http://devernay.free.fr/hacks/chip8/C8TECH10.HTM

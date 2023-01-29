@@ -14,6 +14,14 @@ public class CPUView extends JPanel {
     private JLabel stack[][] = new JLabel[16][2];
     private JLabel other[][] = {
         {
+            new JLabel("Reset Counter"),
+            new JLabel("0x0000")
+        },
+        {
+            new JLabel("Current Command"),
+            new JLabel("0x0000")
+        },
+        {
             new JLabel("Program Counter"),
             new JLabel("0x0000")
         },
@@ -44,7 +52,7 @@ public class CPUView extends JPanel {
         GridLayout gridStackLayout = new GridLayout(16,2);
         stackPanel.setLayout(gridStackLayout);
 
-        GridLayout gridOtherLayout = new GridLayout(3,2);
+        GridLayout gridOtherLayout = new GridLayout(5,1);
         otherPanel.setLayout(gridOtherLayout);
 
     
@@ -68,7 +76,7 @@ public class CPUView extends JPanel {
 
         }
 
-        for (int row = 0; row < 3; row++) {
+        for (int row = 0; row < 5; row++) {
             other[row][1].setBorder(BorderFactory.createLineBorder(Color.BLACK));
 
             otherPanel.add(other[row][0]);

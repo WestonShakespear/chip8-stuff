@@ -1,5 +1,11 @@
 package com.weston;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Random;
 
 class CPU {
@@ -19,12 +25,17 @@ class CPU {
 
     private boolean[][] screenMEM = new boolean[64][32];
 
-    public CPU() {
+    private short[] memory = new short[4096];
+
+    Random rd;
+
+    public CPU(String romLocation) {
         this.init();
+        this.readROM(romLocation);
     }
 
     public void clockPulse() {
-        this.randomTest();
+        // this.randomTest();
     }
 
     private void init() {
@@ -40,36 +51,70 @@ class CPU {
             S[r] = 0x0000;
         }
 
+        this.clearScreenMEM();
+        this.rd = new Random();
+
+        this.initMemory();
+    }
+
+    private void initMemory() {
+        for (int i = 0; i < 4096; i++) {
+            memory[i] = 0;
+        }
+    }
+
+    private void readROM(String filename) {
+        try {
+            File file = new File(filename);
+            byte[] bytes = new byte[(int) file.length()];
+            FileInputStream fis = new FileInputStream(file);
+            try {
+                fis.read(bytes);
+                int location = 0x200;
+                for (int i = 0; i < bytes.length; i++) {
+                    short val = bytes[i];
+                    if (val < 0) {
+                        val = (short) (val & 0xFF);
+                    }
+
+                    memory[location] = val;
+                    location++;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        
+    }
+
+    public String dumpMEMString() {
+        String ret = "";
+
+        for (int i = 0; i < 4096; i++) {
+            if (i % 16 == 0) {
+                ret += "\n";
+                ret += padHex(Integer.toHexString(i), 4);
+                ret += ":   ";
+
+            }
+            ret += padHex(Integer.toHexString(memory[i]), 2);
+            ret += "  ";
+
+        }
+        return ret;
     }
 
     private void clearScreenMEM() {
         for (int x = 0; x < 64; x++) {
             for (int y = 0; y < 32; y++) {
-                screenMEM[x][y] = false;
+                this.screenMEM[x][y] = false;
             }
         }
     }
 
-    private void randomTest() {
-        Random rd = new Random();
-        for (int x = 0; x < 64; x++) {
-            for (int y = 0; y < 32; y++) {
-                screenMEM[x][y] = rd.nextBoolean();
-            }
-        }
-
-        for(int r = 0; r < 16; r++) {
-            V[r] = (short)rd.nextInt(0, 0xFF);
-        }
-
-        for(int r = 0; r < 16; r++) {
-            S[r] = (short)rd.nextInt(0, 0xFFF);
-        }
-
-        I = (short)rd.nextInt(0, 0xFFF);
-        PC = (short)rd.nextInt(0, 0xFFF);
-        SP = (short)rd.nextInt(0, 0xFFF);
-    }
+    
 
 
 
@@ -78,76 +123,99 @@ class CPU {
     public void setI(short inI) {
         this.I = inI;
     }
-    
-    public short getI() {
-        return this.I;
-    }
 
     public void setPC(short inPC) {
         this.PC = inPC;
-    }
-
-    public short getPC() {
-        return this.PC;
     }
 
     public void setSP(short inSP) {
         this.SP = inSP;
     }
 
-    public short getSP() {
-        return this.SP;
-    }
-
-
     public void setV(byte reg, byte val) {
         V[reg] = val;
+    }
+
+    public void setS(byte level, short val) {
+        this.S[level] = val;
+    }
+    
+    public short getI() {
+        return this.I;
+    }
+
+    public short getPC() {
+        return this.PC;
+    }
+
+    public short getSP() {
+        return this.SP;
     }
 
     public short getV(byte reg) {
         return V[reg];
     }
 
-    public void setS(byte level, short val) {
-        this.S[level] = val;
-    }
-
     public short getS(byte level) {
         return S[level];
     }
 
+    public boolean[][] getStateScreen() {
+        return this.screenMEM;
+    }
 
 
-    public String[] getState() {
+    private void randomTest() {
+        for (int x = 0; x < 64; x++) {
+            for (int y = 0; y < 32; y++) {
+                this.screenMEM[x][y] = this.rd.nextBoolean();
+            }
+        }
+
+        for(int r = 0; r < 16; r++) {
+            this.V[r] = (short)this.rd.nextInt(0, 0xFF);
+        }
+
+        for(int r = 0; r < 16; r++) {
+            this.S[r] = (short)this.rd.nextInt(0, 0xFFF);
+        }
+
+        I = (short)this.rd.nextInt(0, 0xFFF);
+        PC = (short)this.rd.nextInt(0, 0xFFF);
+        SP = (short)this.rd.nextInt(0, 0xFFF);
+    }
+
+
+    public String[] getStateCPUView() {
         String[] ret = new String[35];
 
         int i = 0;
         for (int vI = 0; vI < 16; vI++) {
-            ret[i] = padHex(Integer.toHexString(V[vI]));
+            ret[i] = padHex(Integer.toHexString(V[vI]), 4);
             i++;
         }
         for (int sI = 0; sI < 16; sI++) {
-            ret[i] = padHex(Integer.toHexString(S[sI]));
+            ret[i] = padHex(Integer.toHexString(S[sI]), 4);
             i++;
         }
-        ret[32] = padHex(Integer.toHexString(PC));
-        ret[33] = padHex(Integer.toHexString(I));
-        ret[34] = padHex(Integer.toHexString(SP));
+        ret[32] = padHex(Integer.toHexString(PC), 4);
+        ret[33] = padHex(Integer.toHexString(I), 4);
+        ret[34] = padHex(Integer.toHexString(SP), 4);
 
         return ret;        
     }
 
     public String formatStateSingle(String name, short value) {
         String ret = name + ":  ";
-        ret += padHex(Integer.toHexString(value));
+        ret += padHex(Integer.toHexString(value), 4);
         ret += "  " + value + "\n";
 
         return ret;
     }
 
-    public String padHex(String hex) {
+    public String padHex(String hex, int level) {
         String ret = "0x";
-        ret += String.format("%4s", hex).toUpperCase();
+        ret += String.format("%" + level + "s", hex).toUpperCase();
         ret = ret.replace(" ", "0");
 
         return ret;
@@ -165,7 +233,7 @@ class CPU {
         }
         data += "\n";
         for (int a = 0; a < 16; a++) {
-            String hex = padHex(Integer.toHexString(V[a]));
+            String hex = padHex(Integer.toHexString(V[a]), 2);
             data += hex + "  ";
         }
         data += "\n\n";
@@ -175,11 +243,42 @@ class CPU {
         }
         data += "\n";
         for (int a = 0; a < 16; a++) {
-            String hex = padHex(Integer.toHexString(S[a]));
+            String hex = padHex(Integer.toHexString(S[a]), 4);
             data += hex + "  ";
         }
         data += "\n";
 
         return data;
     }
+
+
+    public void actionPlay() {
+
+    }
+
+    public void actionPause() {
+
+    }
+
+    public void actionStep() {
+
+    }
+
+    public void actionReset() {
+
+    }
+
+    public void actionMEM() {
+        System.out.println(this.dumpMEMString());
+    }
+
+    public void actionSave() {
+
+    }
+
+
+
+
+
+    
 }
