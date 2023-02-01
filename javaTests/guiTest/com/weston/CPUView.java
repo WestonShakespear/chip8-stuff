@@ -105,7 +105,7 @@ public class CPUView extends JPanel {
             i++;
         }
 
-        for (int row = 0; row < 3; row++) {
+        for (int row = 0; row < 5; row++) {
             other[row][1].setText(data[i]);
             i++;
         }

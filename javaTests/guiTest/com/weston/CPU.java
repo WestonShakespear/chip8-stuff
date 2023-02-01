@@ -10,6 +10,11 @@ import java.util.Random;
 
 class CPU {
     
+    //Reset Counter
+    private short RC;
+    //Current Command
+    private short CC;
+
     //Index Register
     private short I;
     //Program Counter
@@ -35,10 +40,13 @@ class CPU {
     }
 
     public void clockPulse() {
-        // this.randomTest();
+        this.randomTest();
     }
 
     private void init() {
+        RC = 0x0000;
+        CC = 0x0000;
+
         I = 0x0000;
         PC = 0x0200;
         SP = 0x0000;
@@ -180,6 +188,9 @@ class CPU {
             this.S[r] = (short)this.rd.nextInt(0, 0xFFF);
         }
 
+        RC = (short)this.rd.nextInt(0, 0xFFF);
+        CC = (short)this.rd.nextInt(0, 0xFFF);
+        
         I = (short)this.rd.nextInt(0, 0xFFF);
         PC = (short)this.rd.nextInt(0, 0xFFF);
         SP = (short)this.rd.nextInt(0, 0xFFF);
@@ -187,7 +198,7 @@ class CPU {
 
 
     public String[] getStateCPUView() {
-        String[] ret = new String[35];
+        String[] ret = new String[37];
 
         int i = 0;
         for (int vI = 0; vI < 16; vI++) {
@@ -198,9 +209,12 @@ class CPU {
             ret[i] = padHex(Integer.toHexString(S[sI]), 4);
             i++;
         }
-        ret[32] = padHex(Integer.toHexString(PC), 4);
-        ret[33] = padHex(Integer.toHexString(I), 4);
-        ret[34] = padHex(Integer.toHexString(SP), 4);
+        ret[32] = padHex(Integer.toHexString(RC), 4);
+        ret[33] = padHex(Integer.toHexString(CC), 4);
+
+        ret[34] = padHex(Integer.toHexString(PC), 4);
+        ret[35] = padHex(Integer.toHexString(I), 4);
+        ret[36] = padHex(Integer.toHexString(SP), 4);
 
         return ret;        
     }
@@ -223,6 +237,9 @@ class CPU {
 
     public String getStateString() {
         String data = "";
+
+        data += formatStateSingle("RC", RC);
+        data += formatStateSingle("CC", CC);
 
         data += formatStateSingle("PC", PC);
         data += formatStateSingle(" I", I);
